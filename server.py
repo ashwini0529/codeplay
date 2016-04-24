@@ -30,73 +30,81 @@ import motor
 from motor import MotorClient
 
 
-db = MotorClient()['orphans']
+db = MotorClient()['codeplay']
 
 class MainHandler(RequestHandler):
     def get(self):
         self.write(dict(status=1,message='API WORKING'))
 
 
-class addOrphan(RequestHandler):
+class addEvent(RequestHandler):
 	@gen.coroutine
 	def post(self):
 		name   = self.get_argument('name','')
-		age = self.get_argument('age',0)
-		gender = self.get_argument('gender','male')
+		description = self.get_argument('desc','')
 		address = self.get_argument('address','')
 		city = self.get_argument('city','')
 		state = self.get_argument('state','')
+		typeOfEvent = self.get_argument('type','')
 		latitude = self.get_argument('latitude','')
 		longitude = self.get_argument('longitude','')
-		timeStamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-		isTaken = 0
+		timeStamp = self.get_argument('time','')	
+		link = self.get_argument('link','#')
+		degree = self.get_argument('degree','0')
 		writeData = {
 		'name':name, 
-		'age':age,
-		'gender':gender,
+		'description' : description,
 		'address':address,
 		'city':city,
 		'state':state,
+		'typeOfEvent':typeOfEvent,
 		'time':timeStamp,
-		'isTaken': isTaken,
+		'link':link,
 		'latitude':latitude,
-		'longitude':longitude
+		'longitude':longitude,
+		'degree' : float(degree)
 		}
-		result = yield db.orphans.insert(writeData)
+		result = yield db.events.insert(writeData)
 		print writeData
 		self.write({'status':1,'message':'Data added successfully'})
 		self.flush()
 
 
-class showOrphans(RequestHandler):
+class showEvents(RequestHandler):
 	@gen.coroutine
 	def post(self):
 		city = self.get_argument('city','')
 		state = self.get_argument('state','')
-		age = self.get_argument('age','')
-		gender = self.get_argument('gender','')
+		typeOfEvent = self.get_argument('type','')
+		degree = self.get_argument('degree','')
+
 		db = self.settings['db']
 		data = []
 		if(city!=''):
-			cursor = db.orphans.find({'city':city})
+			cursor = db.events.find({'city':city})
 			while (yield cursor.fetch_next):
 		         document = cursor.next_object()
 		         data.append(json.loads(json_util.dumps(document)))
 			self.write(json.dumps(dict(data=data)))
 		elif(state!=''):
-			cursor = db.orphans.find({'state':state})
+			cursor = db.events.find({'state':state})
 			while (yield cursor.fetch_next):
 		         document = cursor.next_object()
 		         data.append(json.loads(json_util.dumps(document)))
 			self.write(json.dumps(dict(data=data)))
-		elif(age!=''):
-			cursor = db.orphans.find({'age':age})
+		elif(degree!=''):
+			lowerDegree = float(degree)-20
+			higherDegree = float(degree)+20
+			cursor = db.events.find({'degree':{'$gte':lowerDegree,'$lte':higherDegree}})
+			print lowerDegree
+			print higherDegree
 			while (yield cursor.fetch_next):
 		         document = cursor.next_object()
 		         data.append(json.loads(json_util.dumps(document)))
 			self.write(json.dumps(dict(data=data)))
-		elif(gender!=''):
-			cursor = db.orphans.find({'gender':gender})
+		elif(typeOfEvent!=''):
+			cursor = db.events.find({'typeOfEvent':typeOfEvent})
+			print typeOfEvent
 			while (yield cursor.fetch_next):
 		         document = cursor.next_object()
 		         data.append(json.loads(json_util.dumps(document)))
@@ -105,8 +113,8 @@ class showOrphans(RequestHandler):
 def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
-        (r"/add",addOrphan),
-        (r"/show",showOrphans)
+        (r"/add",addEvent),
+        (r"/show",showEvents)
 ],  debug=True, db=db)
 ##########################################################################################################
 #												App Run
