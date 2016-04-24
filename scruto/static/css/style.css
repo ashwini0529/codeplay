@@ -1,0 +1,149 @@
+/* Form */
+.form {
+  position: relative;
+  z-index: 1;
+  background: #FFFFFF;
+  max-width: 300px;
+  margin: 0 auto 100px;
+  padding: 30px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  text-align: center;
+  max-width: 300px;
+    margin: 55px auto 100px;
+}
+.form .thumbnail {
+  background: #EF3B3A;
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 30px;
+  padding: 50px 30px;
+  border-top-left-radius: 100%;
+  border-top-right-radius: 100%;
+  border-bottom-left-radius: 100%;
+  border-bottom-right-radius: 100%;
+  box-sizing: border-box;
+}
+.form .thumbnail img {
+  display: block;
+  width: 100%;
+}
+.form input {
+  outline: 0;
+  background: #f2f2f2;
+  width: 100%;
+  border: 0;
+  margin: 0 0 15px;
+  padding: 15px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+.new-phone{
+     margin-left: 100px;
+     display: block;
+    }
+@media screen and (max-width: 990px){
+    .new-phone{
+      display: none;
+    }
+    .container{
+      max-width: 300px;
+    }
+    .form{
+      margin: 0 auto;
+
+    }
+    .info{
+      width: 100%;
+      background: #fff;
+    }
+}
+
+.form button {
+  outline: 0;
+  background: #3F51B5;
+  width: 100%;
+  border: 0;
+  padding: 15px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  color: #FFFFFF;
+  font-size: 14px;
+  -webkit-transition: all 0.3 ease;
+  transition: all 0.3 ease;
+  cursor: pointer;
+}
+.form .message {
+  margin: 15px 0 0;
+  color: #b3b3b3;
+  font-size: 12px;
+}
+.form .message a {
+  color: #3F51B5;
+  text-decoration: none;
+}
+.form .register-form {
+  display: none;
+}
+
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+}
+.container:before, .container:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.container .info {
+  margin: 50px auto;
+  text-align: center;
+}
+.container .info h1 {
+  margin: 0 0 15px;
+  padding: 0;
+  font-size: 36px;
+  font-weight: 300;
+  color: #1a1a1a;
+}
+.container .info span {
+  color: #4d4d4d;
+  font-size: 12px;
+}
+.container .info span a {
+  color: #000000;
+  text-decoration: none;
+}
+.container .info span .fa {
+  color: #EF3B3A;
+}
+
+/* END Form */
+/* Demo Purposes */
+body {
+  background: #f2f2f2 !important;
+  font-family: "Lato", sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+body:before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: block;
+  background: #f2f2f2;
+  width: 100%;
+  height: 100%;
+}

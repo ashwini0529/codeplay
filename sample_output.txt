@@ -1,0 +1,34 @@
+Requests :
+
+1. Register : http://localhost:8000:register?userName=test&password=test&location=vellore&gender=male
+
+Output : 
+{
+    "status": 1, 
+    "message": "User registered successfully", 
+    "_id": {
+        "$oid": "57130b5f87bc2f40f5d3ab1e"
+    }
+}
+
+2. Login
+
+{
+    "status": 1, 
+    "message": "User logged in successfully", 
+    "data": [
+        {
+            "username": "dj", 
+            "_id": {
+                "$oid": "57130afa87bc2f40f5d3ab1d"
+            }, 
+            "places": [], 
+            "gender": "male", 
+            "registered_at": "2016-04-17 04:03:05", 
+            "location": "Vellore", 
+            "password": "i", 
+            "email": "i", 
+            "likes": []
+        }
+    ]
+}

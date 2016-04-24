@@ -30,92 +30,61 @@ import motor
 from motor import MotorClient
 
 
-db = MotorClient()['codeplay']
-
+db = MotorClient()['scruto']
 class MainHandler(RequestHandler):
     def get(self):
         self.write(dict(status=1,message='API WORKING'))
 
+class apiHandler(RequestHandler):
+	def get(self):
+		lat = float(self.get_argument('lat',0))
+		lon = float(self.get_argument('lon',0))
+		deg = float(self.get_argument('deg',0))
+		R = 6378137
+		alpha = 60
+		dist = 1000
+		radius = 500
+		if (lat!=0 and lon !=0 and deg !=0):
+			xDist = dist * math.cos(deg/180*math.pi)
+			yDist = dist * math.sin(deg/180*math.pi)
+			dLat = yDist/R
+			dLon = xDist/(R*math.cos(math.pi*lat/180))
+			ans = dLat*180/math.pi
+			lato = lat+ans
+			ans = dLon*180/math.pi
+			lono = lon+ans
+			latFinal = str((lat+lato)/2)
+			lonFinal = str((lon+lono)/2)
+			googleAPIKey='AIzaSyAhqgOMep5oBD_PgioNVDLDcCVk9FBahuc'
+			#requestedURL = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=26.2389,73.0243&radius=25000&types=restaurant|atm|bank|bar|cafe|doctor|gym|doctor&key=AIzaSyBeYe4loaSnbCI3W2tNdw-MpORxDWJ4Lt8'
+			requestedURL = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location='+latFinal+','+ lonFinal+ '&radius=25000&types=restaurant|atm|bank|bar|cafe|doctor|gym|doctor&key=AIzaSyBeYe4loaSnbCI3W2tNdw-MpORxDWJ4Lt8'
+			#requestedURL = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location='+str(latFinal)+','+str(lonFinal)+'&radius='+str(radius)+'&types=amusement_park|doctor|food|gym|zoo|shopping_mall|restaurant|night_club|hospital|lodging|bar&key='+googleAPIKey+'&sensor=true'
+			data = requests.get(requestedURL).json()
+			self.write(json.dumps(dict(status="success", data=data),indent = 4))
+		else:
+			self.write(dict(status=0,message='Either lat,long, or degree undefined.'))
 
-class addEvent(RequestHandler):
-	@gen.coroutine
-	def post(self):
-		name   = self.get_argument('name','')
-		description = self.get_argument('desc','')
-		address = self.get_argument('address','')
-		city = self.get_argument('city','')
-		state = self.get_argument('state','')
-		typeOfEvent = self.get_argument('type','')
-		latitude = self.get_argument('latitude','')
-		longitude = self.get_argument('longitude','')
-		timeStamp = self.get_argument('time','')	
-		link = self.get_argument('link','#')
-		degree = self.get_argument('degree','0')
-		writeData = {
-		'name':name, 
-		'description' : description,
-		'address':address,
-		'city':city,
-		'state':state,
-		'typeOfEvent':typeOfEvent,
-		'time':timeStamp,
-		'link':link,
-		'latitude':latitude,
-		'longitude':longitude,
-		'degree' : float(degree)
-		}
-		result = yield db.events.insert(writeData)
-		print writeData
-		self.write({'status':1,'message':'Data added successfully'})
-		self.flush()
-
-
-class showEvents(RequestHandler):
-	@gen.coroutine
-	def post(self):
-		city = self.get_argument('city','')
-		state = self.get_argument('state','')
-		typeOfEvent = self.get_argument('type','')
-		degree = self.get_argument('degree','')
-
-		db = self.settings['db']
-		data = []
-		if(city!=''):
-			cursor = db.events.find({'city':city})
-			while (yield cursor.fetch_next):
-		         document = cursor.next_object()
-		         data.append(json.loads(json_util.dumps(document)))
-			self.write(json.dumps(dict(data=data)))
-		elif(state!=''):
-			cursor = db.events.find({'state':state})
-			while (yield cursor.fetch_next):
-		         document = cursor.next_object()
-		         data.append(json.loads(json_util.dumps(document)))
-			self.write(json.dumps(dict(data=data)))
-		elif(degree!=''):
-			lowerDegree = float(degree)-20
-			higherDegree = float(degree)+20
-			cursor = db.events.find({'degree':{'$gte':lowerDegree,'$lte':higherDegree}})
-			print lowerDegree
-			print higherDegree
-			while (yield cursor.fetch_next):
-		         document = cursor.next_object()
-		         data.append(json.loads(json_util.dumps(document)))
-			self.write(json.dumps(dict(data=data)))
-		elif(typeOfEvent!=''):
-			cursor = db.events.find({'typeOfEvent':typeOfEvent})
-			print typeOfEvent
-			while (yield cursor.fetch_next):
-		         document = cursor.next_object()
-		         data.append(json.loads(json_util.dumps(document)))
-			self.write(json.dumps(dict(data=data)))
+# class Ammenities(RequestHandler):
+# 	def get(self):
+# 		nextPageToken = self.get_argument('page_token','')
+# 		# if nextPageToken=='':
+# 		# 	requestedURL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=26.2389,73.0243&radius=1000&types=restaurant|atm|bank|bar|cafe|doctor|gym|doctor&key=AIzaSyBeYe4loaSnbCI3W2tNdw-MpORxDWJ4Lt8"
+# 		# else:
+# 		requestedURL = "non"
+# 		requestedURL = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=26.2389,73.0243&radius=1000&types=restaurant|atm|bank|bar|cafe|doctor|gym|doctor&key=AIzaSyBeYe4loaSnbCI3W2tNdw-MpORxDWJ4Lt8&pagetoken="+str(nextPageToken)
+		
+# 		restaurantData = requests.get(requestedURL).json()
+# 		print requestedURL
+# 		#print restaurantData
+# 		#countRestaurants = len(restaurantData['results'])
+# 		self.write(restaurantData)
 
 def make_app():
     return tornado.web.Application([
         (r"/", MainHandler),
-        (r"/add",addEvent),
-        (r"/show",showEvents)
-],  debug=True, db=db)
+        (r"/api",apiHandler)
+
+],  debug=True)
 ##########################################################################################################
 #												App Run
 ##########################################################################################################

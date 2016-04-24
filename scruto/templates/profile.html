@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="UTF-8">
+    <title>Scruto - Profile</title>
+    
+
+    <link rel='stylesheet prefetch' href='http://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900'>
+    <link rel='stylesheet prefetch' href='http://fonts.googleapis.com/css?family=Montserrat:400,700'>
+    <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'>
+    <link rel='stylesheet prefetch' href='../static/bootstrap/css/bootstrap.min.css'>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+     <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="../static/css/main.css">
+
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no"/> 
+<meta http-equiv="content-type" content="text/html; charset=UTF-8"/> <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?sensor=false">
+    </script>
+    <script type="text/javascript"> 
+  var geocoder;
+  var geocoder = new google.maps.Geocoder()
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(successFunction, errorFunction);
+  } 
+  //Get the latitude and the longitude;
+  function successFunction(position) {
+      var lat = position.coords.latitude;
+      var lng = position.coords.longitude;
+      codeLatLng(lat, lng)
+
+  }
+
+  function errorFunction(){
+      $('#messages').html("No results found");
+  }
+
+    function initialize() {
+      geocoder = new google.maps.Geocoder();
+
+  }
+
+  function codeLatLng(lat, lng) {
+
+    var latlng = new google.maps.LatLng(lat, lng);
+    geocoder.geocode({'latLng': latlng}, function(results, status) {
+      if (status == google.maps.GeocoderStatus.OK) {
+      console.log(results)
+        if (results[1]) {
+         //formatted address
+        // alert(results[0].formatted_address)
+        //find country name
+             for (var i=0; i<results[0].address_components.length; i++) {
+            for (var b=0;b<results[0].address_components[i].types.length;b++) {
+
+            //there are different types that might hold a city admin_area_lvl_1 usually does in come cases looking for sublocality type will be more appropriate
+                if (results[0].address_components[i].types[b] == "locality") {
+                    //this is the object you are looking for
+                    city= results[0].address_components[i];
+                    break;
+                }
+            }
+        }
+            $.getJSON( "htttp://api.openweathermap.org/data/2.5/forecast/?lat=12.93333&lon=79.133331&APPID=1111111111", function( data ) {
+            var leng = data.results.length;
+            for( i= 0 ; i< leng ; i++){
+              $('.hotels').append('<div class="panel panel-default"><div class="panel-heading"><h4 class="panel-title"><a data-toggle="collapse" data-parent="#accordion" href="#'+data.results[i].id+'"><img class="hotel-img"src="'+data.results[i].icon+'"/>'+data.results[i].name+'</a><div class="like-btn"><i class="fa fa-heart heart"></i></div></h4></div><div id="'+data.results[i].id+'" class="panel-collapse collapse in"><div class="panel-body"><ul class="fa-ul"><li><i class="fa-li fa fa-map-marker" aria-hidden="true"></i>'+data.results[i].formatted_address+'List icons</li></ul></div></div></div>');
+            }
+
+             
+            
+
+        } else {
+          $( ".result" ).html( "No results found" );
+        }
+      } else {
+        $( ".result" ).html( "Please contact your provider" );
+      }
+    });
+  }
+   
+</script> 
+<!-- 
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBeYe4loaSnbCI3W2tNdw-MpORxDWJ4Lt8&callback=initMap">
+   </script> -->
+
+</head> 
+<body onload="initialize()"> 
+ <nav class="navbar navbar-default">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+     <!--  <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button> -->
+      <a class="navbar-brand" href="/"><img style="max-width: 120px;margin-top: -10px;" src="static/img/logo.png"></a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      
+      <form class="navbar-form navbar-left" role="search">
+        <div class="form-group">
+          
+           <div class="icon-addon addon-lg">
+           			
+                <input type="text" class="search form-control" placeholder="Search for places..">
+                    
+            </div>
+        </div>
+    <!--     <button type="submit" class="btn btn-default">Submit</button> -->
+<!-- 
+    To get the city by get parameter :  -->
+      </form>
+      <ul class="nav navbar-nav navbar-right">
+      {% if result['loggedIn'] == True %}
+        <li><a href="#">Hey <b> {{result['userInfo']['username']}}</b> <span class="sr-only">(current)</span></a></li>
+        <li><a href="/logout" style="color: #3F51B5">Log Out <span class="sr-only">(current)</span></a></li>
+        {%else%}
+        <li class="active"><a href="/login"><i class="fa fa-user fa-2x"></i><span class="sr-only">(current)</span></a></li>
+        {%end%}
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+{% if result['loggedIn'] == True %}
+<h2 class="header">Your Personalized <span style="color:">Scruto</span></h2>
+<div class="dashboard">
+	<div class="container">
+    <div class="row user-menu-container square">
+        <div class="col-md-12 user-details">
+            <div class="row coralbg white">
+                <div class="col-md-12 no-pad">
+                    <div class="user-pad">
+                        <h3>Good Evening, <b>{{result['userInfo']['username']}}</b> </h3>
+                        <h4 class="white"><i class="fa fa-map-marker"></i> Vellore, TM</h4>
+                        <h4 class="white"><i class="fa fa-envelope"></i> {{result['userInfo']['email']}}</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="row overview">
+                <div class="col-md-4 user-pad text-center">
+                    <h3><i class="fa fa-heart"></i>&nbsp;LIKES</h3>
+                    <h4>20</h4>
+                </div>
+                <div class="col-md-4 user-pad text-center">
+                    <h3><i class="fa fa-twitter"></i>&nbsp;FOLLOWERS</h3>
+                    <h4>234</h4>
+                </div>
+                <div class="col-md-4 user-pad text-center">
+                    <h3><i class="fa fa-bed"></i>&nbsp;BOOKINGS MADE</h3>
+                    <h4>31</h4>
+                </div>
+            </div>
+        </div>
+        
+        </div>
+        <div class="explore-more">
+        	<a href="/"class="header2">Start Exploring.</a>
+        </div>
+
+    </div>
+</div>
+</div>
+{%else%}
+<h2 class="header">Please <a href="/login">Login</a> to see more.</h2>
+{%end%}
+</body>
+
+</html>
+<!-- 
+Hey....
+This is my profile page..
+{% if result['loggedIn'] == True %}
+<p>Your username : {{result['userInfo']['username']}}</p>
+<p>Your password : {{result['userInfo']['password']}}</p>
+<p>Your email : {{result['userInfo']['email']}}</p>
+{%else%}
+<h3>You are not logged in dude...</h3>
+{%end%} -->	
